@@ -10,6 +10,7 @@
     <canvas id="gameCanvas" width="700" height="500"></canvas>
     <script>
         const FPS = 30;
+        const FRICTION = 0.7; // friction (0 = no friction, 1 = lots of)
         const SHIP_SIZE = 30;
         const SHIP_THRUST = 5; // acceleration in pixels per second
         const TURN_SPEED = 360; // turn speed in degrees per second
@@ -75,6 +76,9 @@
             if (ship.thrusting) {
                 ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
                 ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
+            } else { // When not thrusting apply fricion
+                ship.thrust.x -= FRICTION * ship.thrust.x / FPS;
+                ship.thrust.y -= FRICTION * ship.thrust.y / FPS;
             }
 
             // draw ship
