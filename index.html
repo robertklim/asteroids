@@ -11,6 +11,7 @@
     <script>
         const FPS = 30;
         const SHIP_SIZE = 30;
+        const SHIP_THRUST = 5; // acceleration in pixels per second
         const TURN_SPEED = 360; // turn speed in degrees per second
 
         /** @type {HTMLCanvasElement} */
@@ -22,7 +23,12 @@
             y: canv.height / 2,
             r: SHIP_SIZE / 2,
             a: 90 / 180 * Math.PI, // 90 degrees in radians
-            rot: 0
+            rot: 0,
+            thrusting: false,
+            thrust: { // thrust direction
+                x: 0,
+                y: 0
+            }
         }
 
         // set up event handlers
@@ -38,7 +44,7 @@
                     ship.rot = TURN_SPEED / 180 * Math.PI / FPS;
                     break;
                 case 38: // up arrow (move forward)
-
+                    ship.thrusting = true;
                     break;
                 case 39: // right arrow (rotate right)
                     ship.rot = -TURN_SPEED / 180 * Math.PI / FPS;
@@ -52,7 +58,7 @@
                     ship.rot = 0;
                     break;
                 case 38: // up arrow (stop moving forward)
-
+                    ship.thrusting = false;
                     break;
                 case 39: // right arrow (stop rotating right)
                     ship.rot = 0;
@@ -64,6 +70,12 @@
             // draw space
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canv.width, canv.height,);
+
+            // thrust
+            if (ship.thrusting) {
+                ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
+                ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
+            }
 
             // draw ship
             ctx.strokeStyle = "white";
@@ -88,7 +100,8 @@
             ship.a += ship.rot;
 
             // move ship
-
+            ship.x += ship.thrust.x;
+            ship.y += ship.thrust.y;
 
             // center dot
             ctx.fillStyle = "red";
