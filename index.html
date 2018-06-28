@@ -54,8 +54,26 @@
                     x = Math.floor(Math.random() * canv.width);
                     y = Math.floor(Math.random() * canv.height);
                 } while (distBetweenPoints(ship.x, ship.y, x, y) < ROIDS_SIZE * 2 + ship.r);
-                roids.push(newAsteroid(x, y));
+                roids.push(newAsteroid(x, y, Math.ceil(ROIDS_SIZE / 2)));
             }
+        }
+
+        function destroyAsteroid(index) {
+            let x = roids[index].x;
+            let y = roids[index].y;
+            let r = roids[index].r;
+
+            // split the asteroid in two
+            if (r == Math.ceil(ROIDS_SIZE / 2)) { // split big
+                roids.push(newAsteroid(x, y, Math.ceil(ROIDS_SIZE / 4)));
+                roids.push(newAsteroid(x, y, Math.ceil(ROIDS_SIZE / 4)));
+            } else if (r == Math.ceil(ROIDS_SIZE / 4)) { // split medium
+                roids.push(newAsteroid(x, y, Math.ceil(ROIDS_SIZE / 8)));
+                roids.push(newAsteroid(x, y, Math.ceil(ROIDS_SIZE / 8)));
+            }
+
+            // destroy the asteroid
+            roids.splice(index, 1);
         }
 
         function distBetweenPoints(x1, y1, x2, y2) {
@@ -100,13 +118,13 @@
             }
         }
 
-        function newAsteroid(x, y) {
+        function newAsteroid(x, y, r) {
             let roid = {
                 x: x,
                 y: y,
                 xv: Math.random() * ROIDS_SPD / FPS * (Math.random() < 0.5 ? 1 : -1),
                 yv: Math.random() * ROIDS_SPD / FPS * (Math.random() < 0.5 ? 1 : -1),
-                r: ROIDS_SIZE / 2,
+                r: r,
                 a: Math.random() * Math.PI * 2, // In radians
                 vert: Math.floor(Math.random() * (ROIDS_VERT + 1) + ROIDS_VERT / 2),
                 offs: []
@@ -325,7 +343,8 @@
                         ship.lasers.splice(j, 1);
 
                         // remove steroid
-                        roids.splice(i, 1);
+                        //roids.splice(i, 1);
+                        destroyAsteroid(i);
 
                         break;
                     }
@@ -339,6 +358,8 @@
                     for (let i=0; i < roids.length; i++) {
                         if (distBetweenPoints(ship.x, ship.y, roids[i].x, roids[i].y) < ship.r + roids[i].r) {
                             explodeShip();
+                            destroyAsteroid(i);
+                            break;
                         }
                     }
                 }
