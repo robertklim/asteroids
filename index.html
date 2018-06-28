@@ -305,9 +305,37 @@
                 ctx.fill();
             }
 
+            // detect laser hit asteroid
+            let ax, ay, ar, lx, ly;
+            for (let i=roids.length - 1; i >= 0; i--) {
+                // grab asteroid properties
+                ax = roids[i].x;
+                ay = roids[i].y;
+                ar = roids[i].r;
+
+                // loot over the lasers
+                for (let j = ship.lasers.length - 1; j >= 0; j--) {
+                    // grab laser properties
+                    lx = ship.lasers[j].x;
+                    ly = ship.lasers[j].y;
+
+                    // detect hits
+                    if (distBetweenPoints(ax, ay, lx, ly) < ar) {
+                        // remove laser
+                        ship.lasers.splice(j, 1);
+
+                        // remove steroid
+                        roids.splice(i, 1);
+
+                        break;
+                    }
+                }
+            }
+
+            // check for collisions when not exploding
             if (!exploding) {
                 if (ship.blinkNum == 0) {
-                    // check for collisions
+                    // check only when not blinking
                     for (let i=0; i < roids.length; i++) {
                         if (distBetweenPoints(ship.x, ship.y, roids[i].x, roids[i].y) < ship.r + roids[i].r) {
                             explodeShip();
