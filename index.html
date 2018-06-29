@@ -88,8 +88,8 @@
             return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
         }
 
-        function drawShip(x, y, a) {
-            ctx.strokeStyle = "white";
+        function drawShip(x, y, a, color = "white") {
+            ctx.strokeStyle = color;
             ctx.lineWidth = SHIP_SIZE / 20;
             ctx.beginPath();
             ctx.moveTo( // nose of the ship
@@ -382,8 +382,10 @@
             }
 
             // draw the remaining lives
+            let lifeColor;
             for (let i = 0; i < lives; i++) {
-                drawShip(SHIP_SIZE + i * SHIP_SIZE * 1.2, SHIP_SIZE, 0.5 * Math.PI);
+                lifeColor = exploding && i == lives - 1 ? "red" : "white";
+                drawShip(SHIP_SIZE + i * SHIP_SIZE * 1.2, SHIP_SIZE, 0.5 * Math.PI, lifeColor);
             }
 
             // detect laser hit asteroid
