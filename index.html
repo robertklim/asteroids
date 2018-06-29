@@ -113,11 +113,16 @@
         }
 
         function gameOver() {
-            console.log("TODO Game Over!");
-            // TODO Game Over
+            ship.dead = true;
+            text = "Game Over!";
+            textAlpha = 1.0;
         }
 
         function keyDown(/** @type {KeyboardEvent} */ ev) {
+            if (ship.dead) {
+                return;
+            }
+
             switch(ev.keyCode) {
                 case 32: // space bar (shoot laser)
                     shootLaser();
@@ -135,6 +140,10 @@
         }
 
         function keyUp(/** @type {KeyboardEvent} */ ev) {
+            if (ship.dead) {
+                return;
+            }
+
             switch(ev.keyCode) {
                 case 32: // space bar (allow shoting again)
                     ship.canShoot = true;
@@ -194,6 +203,7 @@
                 blinkNum: Math.ceil(SHIP_INV_DUR / SHIP_BLINK_DUR),
                 blinkTime: Math.ceil(SHIP_BLINK_DUR * FPS),
                 canShoot: true,
+                dead: false,
                 explodeTime: 0,
                 lasers: [],
                 rot: 0,
@@ -231,7 +241,7 @@
             ctx.fillRect(0, 0, canv.width, canv.height,);
 
             // thrust
-            if (ship.thrusting) {
+            if (ship.thrusting && !ship.dead) {
                 ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
                 ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
 
@@ -264,7 +274,7 @@
 
             // draw ship
             if (!exploding) {
-                if (blinkOn) {
+                if (blinkOn && !ship.dead) {
                     drawShip(ship.x, ship.y, ship.a);
                 }
 
@@ -420,7 +430,7 @@
 
             // check for collisions when not exploding
             if (!exploding) {
-                if (ship.blinkNum == 0) {
+                if (ship.blinkNum == 0 && !ship.dead) {
                     // check only when not blinking
                     for (let i=0; i < roids.length; i++) {
                         if (distBetweenPoints(ship.x, ship.y, roids[i].x, roids[i].y) < ship.r + roids[i].r) {
